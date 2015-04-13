@@ -8,13 +8,16 @@
     <arg name="publishing_rate" default="30"/>
     <arg name="bool_publisher_topic" default="/logging_manager/log"/>
     <arg name="bool_stamped_publisher_topic" default="/logging_manager/log_stamped"/>
+    <arg name="logging_dir" default="/opt/strands/data/" />
 
     <arg name="machine" default="localhost" />
     <arg name="user" default="" />
 
     <machine name="$(arg machine)" address="$(arg machine)" env-loader="$(optenv ROS_ENV_LOADER )" user="$(arg user)" default="false"/>
 
-    <node pkg="aaf_logging" type="start_stop_logging.py" name="logging_server" output="screen" respawn="true"/>
+    <node pkg="aaf_logging" type="start_stop_logging.py" name="logging_server" output="screen" respawn="true">
+        <arg name="logging_dir" value="$(arg logging_dir)"/>
+    </node>
 
     <include file="$(find topological_logging_manager)/launch/manager.launch">
         <arg name="machine" value="$(arg machine)"/>
