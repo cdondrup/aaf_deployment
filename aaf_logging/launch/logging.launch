@@ -16,7 +16,7 @@
     <machine name="$(arg machine)" address="$(arg machine)" env-loader="$(optenv ROS_ENV_LOADER )" user="$(arg user)" default="false"/>
 
     <node pkg="aaf_logging" type="start_stop_logging.py" name="logging_server" output="screen" respawn="true">
-        <arg name="logging_dir" value="$(arg logging_dir)"/>
+        <param name="logging_dir" value="$(arg logging_dir)"/>
     </node>
 
     <include file="$(find topological_logging_manager)/launch/manager.launch">
