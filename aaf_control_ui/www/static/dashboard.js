@@ -1,11 +1,11 @@
   var hostname = location.hostname;
     var ros = new ROSLIB.Ros({
-      url : 'ws://'+hostname+'/rosws'
+      url : rosws_url
     });
   
   function emergency_stop() {
     console.log("notfall");
-    var service = new ROSLIB.Service({ros : ros, name : '/go_to_safety_point', serviceType : 'std_srvs/Empty'}); 
+    var service = new ROSLIB.Service({ros : ros, name : '/safety_stop', serviceType : 'std_srvs/Empty'}); 
     var request = new ROSLIB.ServiceRequest();  
     service.callService(request, function(result) {
       console.log('Called emergency service');
@@ -104,7 +104,7 @@
     var viewer = new MJPEGCANVAS.Viewer({
     divID : 'mjpeg',
     host : hostname,
-    port: '/video',
+    port: mjpeg_suffix,
     width : 320,
     height : 240,
     topic : '/head_xtion/rgb/image_color'
