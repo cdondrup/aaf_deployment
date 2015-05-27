@@ -9,6 +9,7 @@ from actionlib_msgs.msg import GoalStatus
 import bellbot_action_server.msg
 from roslaunch_axserver.msg import launchAction, launchGoal
 from strands_executive_msgs.abstract_task_server import AbstractTaskServer
+from bellbot_action_server.msg import BellbotState
 
 
 class StartBellbot(AbstractTaskServer):
@@ -26,7 +27,7 @@ class StartBellbot(AbstractTaskServer):
         super(StartBellbot, self).__init__(
             name=name,
             action_type=bellbot_action_server.msg.bellbotAction,
-            interruptible=False
+            interruptible=True
         )
         rospy.loginfo(" ... started " + name)
 
@@ -39,14 +40,22 @@ class StartBellbot(AbstractTaskServer):
             task.start_node_id = str(self.start)
             task.end_node_id = task.start_node_id
         if task.max_duration.secs == 0.0:
-            task.max_duration.secs = 3600
+            task.max_duration = task.end_before - task.start_after
         if task.priority == 0:
             task.priority = 2
 
         return task
 
+    def state_callback(self, msg):
+        rospy.loginfo("STATE: %s" % msg.name)
+        if msg.name == 'Guiding':
+            self.interruptible = False
+        else:
+            self.interruptible = True
+
     def execute(self, goal):
         self.started = False
+        rospy.Subscriber("/bellbot_state", BellbotState, self.state_callback)
         lg = launchGoal()
         lg.pkg = "aaf_bellbot"
         lg.launch_file = "aaf_bellbot.launch.xml"
