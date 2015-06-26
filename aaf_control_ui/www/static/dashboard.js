@@ -1,8 +1,27 @@
   var hostname = location.hostname;
-    var ros = new ROSLIB.Ros({
-      url : rosws_url
-    });
+  console.log(hostname);
+  var ros = new ROSLIB.Ros({
+    url : rosws_url
+  });
   
+  ros.on('connection', function() {
+    console.log('Connected to websocket server.');
+    $("#connection_broken").addClass('hide');
+    $("#connection_ok").removeClass('hide');
+  });
+
+  ros.on('error', function(error) {
+    console.log('Error connecting to websocket server: ', error);
+    $("#connection_ok").addClass('hide');
+    $("#connection_broken").removeClass('hide');
+  });
+
+  ros.on('close', function() {
+    console.log('Connection to websocket server closed.');
+    $("#connection_ok").addClass('hide');
+    $("#connection_broken").removeClass('hide');
+  });
+
   function emergency_stop() {
     console.log("notfall");
     var service = new ROSLIB.Service({ros : ros, name : '/go_to_safety_point', serviceType : 'std_srvs/Empty'}); 
@@ -203,7 +222,6 @@
 
 
   function init() {
-    init_mjpeg(hostname)
     init_say();
     init_battery();
     init_tasks();

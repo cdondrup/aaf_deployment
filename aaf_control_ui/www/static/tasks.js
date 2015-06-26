@@ -3,6 +3,25 @@
       url : rosws_url
     });
   
+  ros.on('connection', function() {
+    console.log('Connected to websocket server.');
+    $("#connection_broken").addClass('hide');
+    $("#connection_ok").removeClass('hide');
+  });
+
+  ros.on('error', function(error) {
+    console.log('Error connecting to websocket server: ', error);
+    $("#connection_ok").addClass('hide');
+    $("#connection_broken").removeClass('hide');
+  });
+
+  ros.on('close', function() {
+    console.log('Connection to websocket server closed.');
+    $("#connection_ok").addClass('hide');
+    $("#connection_broken").removeClass('hide');
+  });
+
+
   function demand_task(action, waypoint, duration) {
     console.log("demand_task");
     var service = new ROSLIB.Service({ros : ros, name : '/aaf_control_ui_server/demand_task', serviceType : 'aaf_control_ui/DemandTask'}); 
@@ -14,6 +33,16 @@
       console.log('Called demand_task service');
     });
   }
+
+  function clear_schedule() {
+    console.log("clear_schedule");
+    var service = new ROSLIB.Service({ros : ros, name : '/task_executor/clear_schedule', serviceType : 'std_srvs/Empty'}); 
+    var request = new ROSLIB.ServiceRequest();
+    service.callService(request, function(result) {
+      console.log('Called clear_schedule service: ' + result);
+    });
+  }
+
 
   function init_tasks() {
     var taskTopic = new ROSLIB.Topic({
